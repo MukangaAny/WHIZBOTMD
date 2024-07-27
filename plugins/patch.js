@@ -1,5 +1,3 @@
-
-
 const os = require("os");
 const fs = require("fs");
 const Config = require("../config");
@@ -55,9 +53,9 @@ const database_info = (() => {
   })(1, 499);
   return dbNumber;
 })();
-smd({ cmdname: "updatenow", type: "owner", info: "Downloads the entire Git repository from https://github.com/WHIZBOT1/WHIZBOTMD on the root of the app.", fromMe: s_ser, filename: __filename }, async (message) => {
+smd({ cmdname: "updatenow", type: "owner", info: "Downloads the entire Git repository from https://github.com/Astropeda/Asta on the root of the app.", fromMe: s_ser, filename: __filename }, async (message) => {
   try {
-    const repoUrl = 'https://github.com/WHIZBOT1/WHIZBOTMD.git';
+    const repoUrl = 'https://github.com/Astropeda/Asta';
     const repoDir = './'; // Current working directory (root of the app)
 
     await send.message("Downloading Git Repository...");
@@ -180,7 +178,7 @@ smd(
           }
         }
 
-        return await message.send("`WHIZBOT MD UPDATE WAS SUCCESSFULL ✅`");
+        return await message.send("`ASTA MD UPDATE WAS SUCCESSFULL ✅`");
       } else {
         return await message.send(
           "*Auto Updated Failed, Unable to Download Update Please Manually Do It*"
@@ -191,112 +189,105 @@ smd(
     }
   }
 );
+const { commands } = require("../lib");
 
- smd(
-  {
-    cmdname: "menu",
-    desc: "Help list",
-    react: "✝️",
-    type: "user",
-    filename: __filename,
-  },
-  async (message, input) => {
-    try {
-      const { commands } = require("../lib");
-      const commandInput = input.split(" ")[0]?.toLowerCase();
-      if (commandInput) {
-        const foundCommand = commands.find(cmd => cmd.pattern === commandInput);
-        if (foundCommand) {
-          const commandDetails = [
-            `*🔉 Command:* ${foundCommand.pattern}`,
-            foundCommand.category ? `*💁 Category:* ${foundCommand.category}` : "",
-            foundCommand.alias?.length ? `*💁 Alias:* ${foundCommand.alias.join(", ")}` : "",
-            foundCommand.desc ? `*💁 Description:* ${foundCommand.desc}` : "",
-            foundCommand.use ? `*〽️ Usage:*\n\`\`\`${prefix}${foundCommand.pattern} ${foundCommand.use}\`\`\`` : "",
-            foundCommand.usage ? `*〽️ Usage:*\n\`\`\`${foundCommand.usage}\`\`\`` : "",
-          ].filter(detail => detail).join("\n");
-          
-          await message.reply(commandDetails);
-          return;
-        }
+smd({
+  cmdname: "menu",
+  desc: "📃 Show all available commands",
+  react: "🍀",
+  type: "user",
+  filename: __filename,
+}, async (message, input) => {
+  try {
+    // Define themes
+    const themes = [
+      {
+        header: "🤖 Bot Command Menu 🤖",
+        footer: "WHIZBOT.INC🤖",
+        categoryHeader: "📂 Category:",
+        commandPrefix: "🔹",
+        image: "https://telegra.ph/file/7a18a0f57302c03be33a0.jpg",
+      },
+      {
+        header: "🤖 Bot Command Menu 🤖",
+        footer: "WHIZBOT.INC🤖",
+        categoryHeader: "📂 Category:",
+        commandPrefix: "🔹",
+        image: "https://telegra.ph/file/e9780ee9c3a84c2817e41.jpg",
       }
+    ];
 
-      const menuThemes = [
-        {
-          header: `┌────────────────────────────┐\n│       *${Config.botname}* Menu       │\n└────────────────────────────┘`,
-          commandPrefix: "├─ ",
-          footer: "└────────────────────────────┘",
-          categoryHeader: "┌── *",
-          categoryFooter: "* ──┐",
-          commandFooter: "",
-        },
-        {
-          header: `╭────────────────────────────╮\n│      *${Config.botname}* Menu      │\n╰────────────────────────────╯`,
-          commandPrefix: "├─ ",
-          footer: "╰────────────────────────────╯",
-          categoryHeader: "╭── *",
-          categoryFooter: "* ──╮",
-          commandFooter: "",
-        },
-        {
-          header: `╔════════════════════════════╗\n║      *${Config.botname}* Menu     ║\n╚════════════════════════════╝`,
-          commandPrefix: "╠═ ",
-          footer: "╚════════════════════════════╝",
-          categoryHeader: "╔══ *",
-          categoryFooter: "* ══╗",
-          commandFooter: "",
-        },
-      ];
+    // Select a random theme
+    const selectedTheme = themes[Math.floor(Math.random() * themes.length)];
 
-      const menuTheme = menuThemes[Math.floor(Math.random() * menuThemes.length)];
+    // Fetching the image as a buffer
+    const imageBuffer = await axios.get(selectedTheme.image, {
+      responseType: "arraybuffer",
+    });
 
-      const categorizedCommands = {};
-      commands.forEach(command => {
-        if (!command.dontAddCommandList && command.pattern) {
-          if (!categorizedCommands[command.category]) {
-            categorizedCommands[command.category] = [];
-          }
-          categorizedCommands[command.category].push(command.pattern);
+    // Border characters
+    const topBorder = "╔══════════════════════════════════════════════════╗";
+    const bottomBorder = "╚══════════════════════════════════════════════════╝";
+    const sideBorder = "║";
+    const emptyLine = `${sideBorder}                                              ${sideBorder}`;
+
+    // Function to pad text within the border
+    const padText = (text, length = 46) => {
+      const padding = length - text.length;
+      return text + ' '.repeat(padding);
+    };
+
+    // Prepare menu text
+    let menuText = `
+${topBorder}
+${sideBorder} ${padText(selectedTheme.header)} ${sideBorder}
+${sideBorder} ${padText(`*🕒 Time:* ${new Date().toLocaleTimeString()}`)} ${sideBorder}
+${sideBorder} ${padText(`*📅 Date:* ${new Date().toLocaleDateString()}`)} ${sideBorder}
+${sideBorder} ${padText(`*🔢 Total Commands:* ${commands.length}`)} ${sideBorder}
+${bottomBorder}
+${sideBorder} ${padText(selectedTheme.footer)} ${sideBorder}
+${sideBorder} ${padText("Powered by KING B2K ✓")} ${sideBorder}
+${bottomBorder}`;
+
+    const categorizedCommands = {};
+    commands.forEach((command) => {
+      if (!command.dontAddCommandList && command.pattern) {
+        if (!categorizedCommands[command.category]) {
+          categorizedCommands[command.category] = [];
         }
+        categorizedCommands[command.category].push(command.pattern);
+      }
+    });
+
+    for (const category in categorizedCommands) {
+      menuText += `
+${selectedTheme.categoryHeader} *${category}*\n`;
+      categorizedCommands[category].forEach((command) => {
+        menuText += `${selectedTheme.commandPrefix} ${command}\n`;
       });
-
-      const currentTime = message.time;
-      const currentDate = message.date;
-      const menuHeader = `
-${menuTheme.header}
-👤 *Owner:* ${Config.ownername}
-⏱ *Uptime:* ${runtime(process.uptime())}
-💾 *RAM Usage:* ${formatp(os.totalmem() - os.freemem())}
-🕒 *Time:* ${currentTime}
-📅 *Date:* ${currentDate}
-📜 *Commands:* ${commands.length}
-📈 *Usage Trend:* ${trend_usage}
-🗄 *Database:* ${database_info}
-${menuTheme.footer}`;
-
-      let menuText = `${menuHeader}\n`;
-
-      for (const [category, commandList] of Object.entries(categorizedCommands)) {
-        menuText += `
-${menuTheme.categoryHeader}${category}${menuTheme.categoryFooter}
-${commandList.map(cmd => `${menuTheme.commandPrefix}${Config.HANDLERS}${cmd}`).join("\n")}
-${menuTheme.commandFooter}`;
-      }
-
-      menuText += Config.caption;
-
-      const messageOptions = {
-        caption: menuText,
-        ephemeralExpiration: 30,
-      };
-
-      await message.sendUi(message.chat, messageOptions, message);
-    } catch (error) {
-      await message.error(`${error}\nCommand: menu`, error);
+      menuText += `\n`;
     }
+
+    // Creating the message data
+    const messageData = {
+      image: Buffer.from(imageBuffer.data, 'binary'),
+      caption: menuText,
+    };
+
+    // Sending the message with the image
+    const message_options = {
+      quoted: message,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+      },
+    };
+
+    await message.bot.sendMessage(message.chat, messageData, message_options);
+  } catch (error) {
+    await message.reply(`❌ Error: ${error.message}`);
   }
-);
-          
+});
 smd(
   {
     pattern: "menus",
@@ -313,7 +304,7 @@ smd(
         _0x22514a.date +
         "\n*➮ɴᴏᴡ ᴛɪᴍᴇ :* " +
         _0x22514a.time +
-        "\n\n➮Fᴏᴜɴᴅᴇʀ- whizbot Team\n➮Oᴡɴᴇʀ - " +
+        "\n\n➮Fᴏᴜɴᴅᴇʀ- Astropeda Team\n➮Oᴡɴᴇʀ - " +
         Config.ownername +
         "\n➮Nᴜᴍ - " +
         owner.split(",")[0] +
@@ -321,7 +312,7 @@ smd(
         formatp(os.totalmem() - os.freemem()) +
         "/" +
         formatp(os.totalmem()) +
-        "\n\n *🧑‍💻 :*  whizbot md ɪꜱ ɴᴏᴡ Aᴠᴀɪʟᴀʙʟᴇ\n\n" +
+        "\n\n *🧑‍💻 :*  ᴀsᴛᴀ ᴍᴅ ɪꜱ ɴᴏᴡ Aᴠᴀɪʟᴀʙʟᴇ\n\n" +
         readmore +
         "\n╭──❰ *ALL MENU* ❱\n│🏮 Lɪꜱᴛ\n│🏮 Cᴀᴛᴇɢᴏʀʏ\n│🏮 Hᴇʟᴘ\n│🏮 Aʟɪᴠᴇ\n│🏮 Uᴘᴛɪᴍᴇ\n│🏮 Wᴇᴀᴛʜᴇʀ\n│🏮 Lɪɴᴋ\n│🏮 Cᴘᴜ\n│🏮 Rᴇᴘᴏꜱɪᴛᴏʀʏ\n╰─────────────⦁"
       ).trim();
@@ -498,7 +489,7 @@ smd(
       const designs = [
         async () => {
           const imageBuffer = await axios.get(
-            "https://telegra.ph/file/1b27ed897c3a78bbd70c7.jpg",
+            "https://telegra.ph/file/4927bf260e9f278ab396f.jpg,
             {
               responseType: "arraybuffer",
             }
@@ -515,13 +506,13 @@ smd(
           const quoteText = `\n\n*"${quote.result.body}"*\n_- ${quote.result.author}_`;
           const end = new Date().getTime();
           const pingSeconds = (end - start) / 1000;
-          const captionText = `𝑊𝛨𝛪𝛧𝐵𝛩𝑇 2.0.0 𝛲𝛥𝑇𝐶𝛨\n\n*Ping:* ${pingSeconds} seconds${quoteText}\n\n 𝑊𝛨𝛪𝛧𝐵𝛩𝑇`;
+          const captionText = `whizbot md patch 2.0.0\n\n*Ping:* ${pingSeconds} seconds${quoteText}\n\nwhizbot md`;
 
           return { image: imageBuffer.data, caption: captionText };
         },
         async () => {
           const imageBuffer = await axios.get(
-            "https://telegra.ph/file/1b27ed897c3a78bbd70c7.jpg",
+            "https://telegra.ph/file/4927bf260e9f278ab396f.jpg",
             {
               responseType: "arraybuffer",
             }
@@ -537,13 +528,13 @@ smd(
 
           const end = new Date().getTime();
           const pingSeconds = (end - start) / 1000;
-          const captionText = `𝑊𝛨𝛪𝛧𝐵𝛩𝑇 2.0.0 𝛲𝛥𝑇𝐶𝛨\n\n*Ping:* ${pingSeconds} seconds\n\n*Fact:*\n${fact.result.fact}\n\n𝑊ℎ𝑖𝑧-𝑀𝐷`;
+          const captionText = `whizbot md patch 2.0.0\n\n*Ping:* ${pingSeconds} seconds\n\n*Fact:*\n${fact.result.fact}\n\nwhizbot md`;
 
           return { image: imageBuffer.data, caption: captionText };
         },
         async () => {
           const imageBuffer = await axios.get(
-            "https://telegra.ph/file/3030fdd0f5baa9890c7df.jpg",
+            "https://telegra.ph/file/4927bf260e9f278ab396f.jpg",
             {
               responseType: "arraybuffer",
             }
@@ -559,10 +550,10 @@ smd(
 
           const end = new Date().getTime();
           const pingSeconds = (end - start) / 1000;
-          const captionText = `𝑊𝛨𝛪𝛧𝐵𝛩𝑇 2.0.0 𝛲𝛥𝑇𝐶𝛨\n\n*Ping:* ${pingSeconds} seconds\n\n*Line:*\n${line.result}\n\n 𝑊ℎ𝑖𝑧-𝑀𝐷`;
+          const captionText = `whizbot md patch 2.0.0\n\n*Ping:* ${pingSeconds} seconds\n\n*Line:*\n${line.result}\n\nwhizbot md`;
 
           return { image: imageBuffer.data, caption: captionText };
-        }, 
+        },
       ];
 
       const randomDesign = designs[Math.floor(Math.random() * designs.length)];
@@ -621,7 +612,7 @@ smd(
       const contextInfo = {
         isForwarded: true,
         forwardingScore: 999,
-        title: "Asta MD Running Since",
+        title: "whizbot MD Running Since",
         body: message,
         footerText: "whizbot MD 2024",
         isSendNotificationMsg: true,
@@ -735,7 +726,7 @@ astro_patch.cmd(
       }
       if (!_0x5eb566) {
         return await _0x15cc76.reply(
-          "*Please Give Me Text. Example: _" + prefix + "trt en i love whizbot_*"
+          "*Please Give Me Text. Example: _" + prefix + "trt en Who are you_*"
         );
       }
       var _0x443df8 = await translatte(_0x5eb566, {
@@ -807,16 +798,6 @@ astro_patch.cmd(
       }
       if (_0x1df566.desc) {
         _0x2c8ec8.push("*✨Description:* " + _0x1df566.desc);
-      }
-      if (_0x1df566.use) {
-        _0x2c8ec8.push(
-          "*〽️Usa:*\n ```" +
-            prefix +
-            _0x1df566.pattern +
-            " " +
-            _0x1df566.use +
-            "```"
-        );
       }
       if (_0x1df566.use) {
         _0x2c8ec8.push(
@@ -1483,115 +1464,4 @@ smd(
     );
   }
 );
-/*
-if (!fs.existsSync("./.git")) {
-  throw "UPDATE COMMAND NOT WORKS B'COZ GIT NOT FOUND IN APP!";
-}
-try {
-  const Heroku = require("heroku-client");
-  //---------------------------------------------------------------------------
 
-  async function updateHerokuApp() {
-    try {
-      const heroku = new Heroku({ token: process.env.HEROKU_API_KEY });
-      await git.fetch();
-      const commits = await git.log(["main..origin/main"]);
-      if (commits.total === 0) {
-        return "You already have latest version installed.";
-      } else {
-        const app = await heroku.get(`/apps/${process.env.HEROKU_APP_NAME}`);
-        const gitUrl = app.git_url.replace(
-          "https://",
-          `https://api:${process.env.HEROKU_API_KEY}@`
-        );
-        try {
-          await git.addRemote("heroku", gitUrl);
-        } catch (e) {
-          print("Heroku remote adding error", e);
-        }
-        await git.push("heroku", "main");
-        return "Bot updated. Restarting.";
-      }
-    } catch (e) {
-      print(e);
-      return "Can't Update, Request Denied!";
-    }
-  }
-
-  smd(
-    {
-      pattern: "checkupdate",
-      desc: "Shows repo's refreshed commits.",
-      category: "tools",
-      fromMe: true,
-      react: "🍂",
-      filename: __filename,
-      use:
-        process.env.HEROKU_APP_NAME && process.env.HEROKU_API_KEY
-          ? "[ start ]"
-          : "",
-    },
-    async (citel, text) => {
-      try {
-        let commits = await DB.syncgit();
-        if (commits.total === 0)
-          return await citel.reply(`*BOT IS UPTO DATE...!!*`);
-        let update = await DB.sync();
-        await citel.bot.sendMessage(
-          citel.chat,
-          { text: update.replace(/Astropeda/, "Astropeda") },
-          { quoted: citel }
-        );
-
-        if (
-          text == "start" &&
-          process.env.HEROKU_APP_NAME &&
-          process.env.HEROKU_API_KEY
-        ) {
-          citel.reply("Build started...");
-          const update = await updateHerokuApp();
-          return await citel.reply(update);
-        }
-      } catch (e) {
-        citel.error(`${e}\n\nCommand: update`, e, "ERROR!");
-      }
-    }
-  );
-
-  smd(
-    {
-      pattern: "updatenow",
-      desc:
-        process.env.HEROKU_APP_NAME && process.env.HEROKU_API_KEY
-          ? "Temporary update for heroku app!"
-          : "update your bot by repo!.",
-      fromMe: true,
-      category: "tools",
-      filename: __filename,
-    },
-    async (citel) => {
-      try {
-        let commits = await DB.syncgit();
-        if (commits.total === 0)
-          return await citel.reply(`*YOU HAVE LATEST VERSION INSTALLED!*`);
-        let update = await DB.sync();
-        let text =
-          " *> Please Wait Updater Started...!*\n  *───────────────────────────*\n" +
-          update +
-          "\n  *───────────────────────────*";
-        await citel.bot.sendMessage(citel.jid, { text });
-        await require("simple-git")().reset("hard", ["HEAD"]);
-        await require("simple-git")().pull();
-        await citel.reply(
-          process.env.HEROKU_APP_NAME && process.env.HEROKU_API_KEY
-            ? "*BOT Temporary Updated on `HEROKU`!\nIt'll reset when your bot restarts!*"
-            : "*Successfully updated. Now You Have Latest Version Installed!*"
-        );
-        // process.exit(1);
-      } catch (e) {
-        citel.error(`${e}\n\nCommand: updatenow`, e, "ERROR!");
-      }
-    }
-  );
-} catch (e) {}
-*/
